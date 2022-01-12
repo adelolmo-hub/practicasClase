@@ -49,7 +49,7 @@ public class Autor {
 			text = String.format("Autor: %s (%s) - %s \n", name, country, groupType);
 		}
 		for(Album albumName : albums) {
-			text += String.format("%d: %s\n",albumName.getYear(), albumName.getSongName());
+			text += String.format("%d: %s\n",albumName.getYear(), albumName.getAlbumName());
 		}
 		text += "----------------------------------------------------";
 		return text;

@@ -1,11 +1,26 @@
 package dam2.m6.pt2;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 public class GestionDOM {
 	
@@ -45,7 +60,7 @@ public class GestionDOM {
 			} 
 			if(ntemp.getNodeName() == "Album"){
 				album.setYear(Integer.parseInt(ntemp.getAttributes().item(0).getNodeValue()));
-				album.setSongName(ntemp.getChildNodes().item(0).getNodeValue());
+				album.setAlbumName(ntemp.getChildNodes().item(0).getNodeValue());
 				albumList.add(album);
 			}
 		}
@@ -76,7 +91,7 @@ public class GestionDOM {
 			for (int j = 0; j < nListAlbum.getLength(); j++) {
 				album = new Album();
 				album.setYear(Integer.parseInt(nListAlbum.item(j).getAttributes().getNamedItem("data_publicacio").getTextContent()));
-				album.setSongName(nListAlbum.item(j).getTextContent());
+				album.setAlbumName(nListAlbum.item(j).getTextContent());
 				lAlbum.add(album);
 			}
 			autor.setAlbums(lAlbum);
@@ -84,4 +99,78 @@ public class GestionDOM {
 		}
 		return lAutor;
 	}
+	
+	public void nuevoElementoDOM(Document doc, String year, String albumName) {
+		try {
+			Element nSongName = doc.createElement("Album");
+			nSongName.setAttribute("data_publicacio", year);
+			nSongName.setTextContent(albumName);
+			NodeList nListAutores = doc.getElementsByTagName("Nom");
+			Node nodeAutor = null;
+			for (int i = 0; i < nListAutores.getLength(); i++) {
+				Node nNode = nListAutores.item(i);
+				if(nNode.getTextContent().equals("Bruce Springsteen")) {
+					nodeAutor = nNode.getParentNode();
+				}
+			}
+			nodeAutor.appendChild(nSongName);
+			guardarDOMaFileTransformer("DiscografiaV2.xml", doc);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void generarXML(ArrayList<Autor> autores){
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+		try {
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			DOMImplementation implementation = builder.getDOMImplementation();
+			Document doc = implementation.createDocument(null, "Musica", null);
+			Node root = doc.getDocumentElement();
+
+			for(Autor autor : autores){
+				List<Album> albumList = autor.getAlbums();
+				for(Album album : albumList){
+					Element nAlbum = doc.createElement("Album");
+					nAlbum.setAttribute("data_publicacio", album.getYear()+"");
+					nAlbum.setAttribute("autor", autor.getName());
+					nAlbum.setTextContent(album.getAlbumName());
+					root.appendChild(nAlbum);
+				}
+			}
+			guardarDOMaFileTransformer("DiscografiaResumida.xml", doc);
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public int guardarDOMaFileTransformer(String nombre, Document doc)
+    {
+        try{
+                
+        //Obtenemos un transformer               
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "10");
+        
+        //Indicamos la fuente a transformar
+        Source source = new DOMSource(doc);
+        
+        //Indicamos el destino
+        File destino = new File("data/" + nombre);
+        StreamResult result = new StreamResult(destino);
+        
+              
+        transformer.transform(source,result);
+        System.out.println("Archivo " + destino.getName() + " creado con exito");
+
+        return 0;
+         }catch(Exception e) {
+           
+           return -1;
+        }
+    }
 }

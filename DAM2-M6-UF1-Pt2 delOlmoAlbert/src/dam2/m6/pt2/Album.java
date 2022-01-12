@@ -12,11 +12,11 @@ public class Album {
 	public void setYear(int year) {
 		this.year = year;
 	}
-	public String getSongName() {
+	public String getAlbumName() {
 		return albumName;
 	}
-	public void setSongName(String songName) {
-		this.albumName = songName;
+	public void setAlbumName(String albumName) {
+		this.albumName = albumName;
 	}
 	
 	

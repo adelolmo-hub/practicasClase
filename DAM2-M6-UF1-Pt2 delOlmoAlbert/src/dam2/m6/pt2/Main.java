@@ -26,12 +26,13 @@ public class Main {
 				File discografia = new File("data/DiscografiaXML.xml");
 				if(discografia.exists()) {
 					Document doc = builder.parse(discografia);
-					//autores = gDom.recorrerDOM(doc);
-					autores = gDom.procesarAutorDirecto(doc);
+					autores = gDom.recorrerDOM(doc);
+					//autores = gDom.procesarAutorDirecto(doc);
 					for (Autor autor : autores) {
 						System.out.println(autor.toString());
 					}
-					//gDom.mostrarAutores(autores);
+					gDom.nuevoElementoDOM(doc, "2014", "High Hopes");
+					gDom.generarXML(autores);
 				}else {
 					System.out.println("El fichero no existe");
 				}
