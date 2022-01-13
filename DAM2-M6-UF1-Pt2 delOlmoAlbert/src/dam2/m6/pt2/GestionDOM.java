@@ -2,7 +2,6 @@ package dam2.m6.pt2;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,12 +19,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
 public class GestionDOM {
 	
 
 	public ArrayList<Autor> recorrerDOM(Document doc) {
+		System.out.println("-----------------------------------------------");
+		System.out.println("Leyendo XML con DOM de forma Secuencial");
+		System.out.println("-----------------------------------------------");
 		ArrayList<Autor> datos = new ArrayList<>();
 		Node node;
 		Node raiz = doc.getFirstChild();
@@ -71,6 +72,9 @@ public class GestionDOM {
 	public ArrayList<Autor> procesarAutorDirecto(Document doc) {
 		Autor autor = null;
 		Album album = null;
+		
+		System.out.println("Leyendo XML con DOM de forma Directa");
+		System.out.println("-----------------------------------------------");
 		
 		ArrayList<Autor> lAutor = new ArrayList<>();
 		NodeList nListAutor = doc.getElementsByTagName("Autor");

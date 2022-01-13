@@ -37,10 +37,14 @@ public class Main {
 				if(discografia.exists()) {
 					Document doc = builder.parse(discografia);
 					autores = gDom.recorrerDOM(doc);
-					//autores = gDom.procesarAutorDirecto(doc);
 					for (Autor autor : autores) {
 						System.out.println(autor.toString());
 					}
+					autores = gDom.procesarAutorDirecto(doc);
+					for (Autor autor : autores) {
+						System.out.println(autor.toString());
+					}
+					
 					gDom.nuevoElementoDOM(doc, "2014", "High Hopes");
 					gDom.generarXML(autores);
 					

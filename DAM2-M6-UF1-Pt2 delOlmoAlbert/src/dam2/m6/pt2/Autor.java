@@ -51,7 +51,7 @@ public class Autor {
 		for(Album albumName : albums) {
 			text += String.format("%d: %s\n",albumName.getYear(), albumName.getAlbumName());
 		}
-		text += "----------------------------------------------------";
+		text += "-----------------------------------------------";
 		return text;
 		
 	}

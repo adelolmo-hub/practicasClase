@@ -7,6 +7,9 @@ import org.xml.sax.helpers.DefaultHandler;
 public class MiHandlerSAX extends DefaultHandler{
 
 	String texto = "";
+	int elementoActual = 0;
+	String nGrupo = "";
+	String pais = "";
 	
 	@Override
 	public void startDocument() {
@@ -24,27 +27,40 @@ public class MiHandlerSAX extends DefaultHandler{
 	public void startElement(String Uri, String localName, String qName,
 			Attributes atts) throws SAXException{
 		if(qName.equals("Autor")) {
-			System.out.println(qName);
-			for (int i = 0; i < atts.getLength(); i++) {
-				texto += atts.getValue(i) + " ";
+			elementoActual = 0;
+			if(atts.getValue(0).equals("Grup")) {
+				nGrupo = atts.getValue(1);
 			}
+			texto+=qName + ": ";
 
-		}else if(qName.equals("Nom")) {
-			System.out.println(qName);
-			for (int i = 0; i < atts.getLength(); i++) {
-				texto += atts.getValue(i) + " ";
-			}	
+		}else if(qName.equals("Nom")){
+			elementoActual=1;
+			pais="(" + atts.getValue(0) + ") ";
+		}else if(qName.equals("Album")){
+			elementoActual = 2;
+			texto+= atts.getValue(0);
 		}
 	}
 
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		System.out.println("Final Elemento: " + qName);
+		if (qName.equals("Autor")) {
+			System.out.println("----------------------------------");
+		}
 	}
 	
 	public void characters(char[] ch, int start, int lenght) throws SAXException{
 		String car = new String(ch,start,lenght);
-		//System.out.println("\tCaracteres: " +car);
+		if(elementoActual == 1) { //Nom
+			texto += car + " " + pais +"- "+nGrupo;
+			System.out.println(texto);
+			texto = "";
+		}else if(elementoActual == 2) { //Album
+			texto += ": "+car;
+			System.out.println(texto);
+			texto = ""; 
+		}
+		elementoActual = 0;
 	}
 	
 }
