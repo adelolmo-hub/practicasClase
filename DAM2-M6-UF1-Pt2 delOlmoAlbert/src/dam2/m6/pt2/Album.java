@@ -18,6 +18,9 @@ public class Album {
 	public void setAlbumName(String albumName) {
 		this.albumName = albumName;
 	}
+	public String toString() {
+		return String.format("%d: %s\n", year, albumName);
+	}
 	
 	
 }

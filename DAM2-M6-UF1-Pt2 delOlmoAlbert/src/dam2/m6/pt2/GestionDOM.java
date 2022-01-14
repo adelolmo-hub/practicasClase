@@ -21,8 +21,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class GestionDOM {
-	
 
+	
 	public ArrayList<Autor> recorrerDOM(Document doc) {
 		System.out.println("-----------------------------------------------");
 		System.out.println("Leyendo XML con DOM de forma Secuencial");
@@ -46,9 +46,9 @@ public class GestionDOM {
 		Autor autor = new Autor();
 		Album album = null;
 		
-		autor.setGroupType(node.getAttributes().item(0).getNodeValue());
+		autor.setGroupType(node.getAttributes().getNamedItem("tipus").getTextContent());
  		if(autor.getGroupType().equals("Grup")) {
-			autor.setGroupNumber(Integer.parseInt(node.getAttributes().item(0).getNodeValue()));
+			autor.setGroupNumber(Integer.parseInt(node.getAttributes().getNamedItem("num_components").getTextContent()));
 		}
 		
 		NodeList nodelist = node.getChildNodes();

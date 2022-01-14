@@ -38,11 +38,11 @@ public class Main {
 					Document doc = builder.parse(discografia);
 					autores = gDom.recorrerDOM(doc);
 					for (Autor autor : autores) {
-						System.out.println(autor.toString());
+						printarAutores(autor);
 					}
 					autores = gDom.procesarAutorDirecto(doc);
 					for (Autor autor : autores) {
-						System.out.println(autor.toString());
+						printarAutores(autor);
 					}
 					
 					gDom.nuevoElementoDOM(doc, "2014", "High Hopes");
@@ -62,5 +62,14 @@ public class Main {
 			}
 
 	}
+		
+		public static void printarAutores(Autor autor) {
+			System.out.print(autor.toString());
+			
+			for(Album albumName : autor.getAlbums()) {
+				System.out.print(albumName.toString());
+			}
+			System.out.println("-----------------------------------------------");
+		}
 
 }

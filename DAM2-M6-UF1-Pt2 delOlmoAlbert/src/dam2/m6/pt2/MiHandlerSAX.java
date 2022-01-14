@@ -1,64 +1,67 @@
 package dam2.m6.pt2;
 
+import java.util.ArrayList;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class MiHandlerSAX extends DefaultHandler{
 
-	String texto = "";
 	int elementoActual = 0;
-	String nGrupo = "";
-	String pais = "";
+	String ruta = "data/DiscografiaResum.txt";
+	Autor autor = new Autor();
+	Album album = new Album();
+	EscribirFichero escribir = new EscribirFichero();
+	ArrayList<Album> albums = new ArrayList<>(); 
 	
 	@Override
 	public void startDocument() {
-		System.out.println("-----------------------------------------------");
-		System.out.println("Comienzo del Documento XML");
-		System.out.println("Leido con SAX");
-		System.out.println("-----------------------------------------------");
+		escribir.borrarDatosArchivo(ruta);
 	}
 	
 	@Override
-	public void endDocument(){
-		System.out.println("Final del Documento XML");
+	public void endDocument() {
+		System.out.println("Archivo " + ruta + " creado correctamente");
 	}
+	
 	
 	public void startElement(String Uri, String localName, String qName,
 			Attributes atts) throws SAXException{
 		if(qName.equals("Autor")) {
 			elementoActual = 0;
-			if(atts.getValue(0).equals("Grup")) {
-				nGrupo = atts.getValue(1);
+			autor.setGroupType(atts.getValue(0));
+			if(autor.getGroupType().equals("Grup")) {
+				autor.setGroupNumber(Integer.parseInt(atts.getValue(1)));
 			}
-			texto+=qName + ": ";
 
 		}else if(qName.equals("Nom")){
 			elementoActual=1;
-			pais="(" + atts.getValue(0) + ") ";
+			autor.setCountry(atts.getValue(0));
 		}else if(qName.equals("Album")){
 			elementoActual = 2;
-			texto+= atts.getValue(0);
+			album.setYear(Integer.parseInt(atts.getValue(0)));
 		}
 	}
 
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		if (qName.equals("Autor")) {
-			System.out.println("----------------------------------");
+		if (qName.equals("Album")) {
+			album = new Album();
+		}else if(qName.equals("Autor")) {
+			autor.setAlbums(albums);
+			escribir.escribirArchivo(ruta, autor);
+			autor = new Autor();
 		}
 	}
 	
 	public void characters(char[] ch, int start, int lenght) throws SAXException{
 		String car = new String(ch,start,lenght);
 		if(elementoActual == 1) { //Nom
-			texto += car + " " + pais +"- "+nGrupo;
-			System.out.println(texto);
-			texto = "";
+			autor.setName(car);
 		}else if(elementoActual == 2) { //Album
-			texto += ": "+car;
-			System.out.println(texto);
-			texto = ""; 
+			album.setAlbumName(car);
+			albums.add(album);
 		}
 		elementoActual = 0;
 	}
