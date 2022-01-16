@@ -20,17 +20,32 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Esta clase contiene metodos para gestionar la informacion leida de un fichero xml utilizando DOM
+ * 
+ * @author Albert del Olmo
+ */
 public class GestionDOM {
 
-	
+	/**
+	 * Obtiene y recorre los nodos del documento y llama al metodo
+	 * procesarAutoresSecuencial para procesar esa información
+	 * 
+	 * @param doc - Documento XML
+	 * @return - ArrayList con los Autores
+	 */
 	public ArrayList<Autor> recorrerDOM(Document doc) {
 		System.out.println("-----------------------------------------------");
 		System.out.println("Leyendo XML con DOM de forma Secuencial");
 		System.out.println("-----------------------------------------------");
 		ArrayList<Autor> datos = new ArrayList<>();
+		
+		//Obtiene el primer nodo del documento
+		Node raiz = doc.getFirstChild(); 
+		//Obtiene una lista con los nodos hijo del primer nodo
+		NodeList nodelist = raiz.getChildNodes(); 
+		
 		Node node;
-		Node raiz = doc.getFirstChild();
-		NodeList nodelist = raiz.getChildNodes();
 		for (int i=0; i<nodelist.getLength();i++) {
 			node = nodelist.item(i);
 			if(node.getNodeType()==Node.ELEMENT_NODE) {
@@ -39,66 +54,93 @@ public class GestionDOM {
 		}
 		return datos;
 	}
-
+	
+	/**
+	 * Recibe el nodo Autor del metodo anterior y añade la
+	 * informacion al objeto Autor
+	 * 
+	 * @param node - Nodo Autor
+	 * @return - Instancia del objeto Autor
+	 */
 	public Autor procesarAutoresSecuencial(Node node) {
 		Node ntemp = null;
 		ArrayList<Album> albumList= new ArrayList<>();
 		Autor autor = new Autor();
 		Album album = null;
 		
+		//Obtiene el atributo con nombre tipus
 		autor.setGroupType(node.getAttributes().getNamedItem("tipus").getTextContent());
  		if(autor.getGroupType().equals("Grup")) {
+ 			//Obtiene el atributo con nombre num_components
 			autor.setGroupNumber(Integer.parseInt(node.getAttributes().getNamedItem("num_components").getTextContent()));
 		}
-		
+		//Obtiene una lista con los nodos hijo (Titulo y Autor)
 		NodeList nodelist = node.getChildNodes();
 		for(int i = 0; i<nodelist.getLength(); i++) {
 			ntemp = nodelist.item(i);
 			album = new Album();
 			if(ntemp.getNodeName() == "Nom") {
+				//Obtiene los atributos Pais y Nombre
 				autor.setCountry(ntemp.getAttributes().item(0).getNodeValue());
 				autor.setName(ntemp.getChildNodes().item(0).getNodeValue());
 			} 
 			if(ntemp.getNodeName() == "Album"){
+				//Obtiene los atributos Relacionados con el Album
 				album.setYear(Integer.parseInt(ntemp.getAttributes().item(0).getNodeValue()));
 				album.setAlbumName(ntemp.getChildNodes().item(0).getNodeValue());
+				//Añade el Album a la lista
 				albumList.add(album);
 			}
 		}
+		//Añade la lista de albums al Autor
 		autor.setAlbums(albumList);
 		return autor;
 	}
-
+	
+	/**
+	 * Procesa el archivo xml de forma directa
+	 * 
+	 * @param doc - Documento xml
+	 * @return - ArrayList con los autores
+	 */
 	public ArrayList<Autor> procesarAutorDirecto(Document doc) {
 		Autor autor = null;
 		Album album = null;
+		ArrayList<Autor> lAutor = new ArrayList<>();
 		
 		System.out.println("Leyendo XML con DOM de forma Directa");
 		System.out.println("-----------------------------------------------");
-		
-		ArrayList<Autor> lAutor = new ArrayList<>();
+		//Obtiene una lista con los nodos Autor del documento
 		NodeList nListAutor = doc.getElementsByTagName("Autor");
 		Node ntemp;
 		for(int i = 0; i < nListAutor.getLength(); i++) {
 			autor = new Autor();
 			ntemp = nListAutor.item(i);
 			Element element = (Element) ntemp;
+			//Obtiene el atributo con nombre tipus
 			autor.setGroupType(element.getAttribute("tipus"));
 			if(autor.getGroupType().equals("Grup")) {
+				//Obtiene el atributo con nombre num_components
 				autor.setGroupNumber(Integer.parseInt(element.getAttribute("num_components")));
 			}
+			//Obtiene el atributo "pais" y el contenido de "nombre"
 			autor.setCountry(element.getElementsByTagName("Nom").item(0).getAttributes().getNamedItem("pais").getTextContent());
 			autor.setName(element.getElementsByTagName("Nom").item(0).getTextContent());
-
+			
+			//Obtiene una lista con los nodos "Album"
 			NodeList nListAlbum = element.getElementsByTagName("Album");
 			ArrayList<Album> lAlbum = new ArrayList<>();
 			for (int j = 0; j < nListAlbum.getLength(); j++) {
 				album = new Album();
+				//Obtiene los atributos Relacionados con el Album
 				album.setYear(Integer.parseInt(nListAlbum.item(j).getAttributes().getNamedItem("data_publicacio").getTextContent()));
 				album.setAlbumName(nListAlbum.item(j).getTextContent());
+				//Añade el Album a la lista
 				lAlbum.add(album);
 			}
+			//Añade el Album a Autor
 			autor.setAlbums(lAlbum);
+			//Añade el Autor a la lista
 			lAutor.add(autor);
 		}
 		return lAutor;

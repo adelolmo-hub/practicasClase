@@ -38,7 +38,7 @@ public class EscribirFichero {
 			File file = new File(ruta);
 			if(file.exists()) {
 				FileWriter escritor = new FileWriter(file);
-				escritor.write("");
+			escritor.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
