@@ -7,6 +7,13 @@ import java.io.IOException;
 
 public class EscribirFichero {
 
+	
+	/**
+	 * Crea un archivo y añade la información de Autor
+	 * 
+	 * @param ruta - Ruta del fichero
+	 * @param autor - Objeto autor con la información a añadir	w
+	 */
 	public void escribirArchivo(String ruta, Autor autor) {
 		File file = new File(ruta);
 		FileWriter escritor = null;
@@ -31,7 +38,11 @@ public class EscribirFichero {
 			}
 		}
 	}
-
+	/**
+	 * Borra la información del archivo si ya existe
+	 * 
+	 * @param ruta - Ruta del archivo
+	 */
 	public void borrarDatosArchivo(String ruta) {
 
 		try {

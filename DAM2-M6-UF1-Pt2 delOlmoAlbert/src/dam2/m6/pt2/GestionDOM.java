@@ -146,19 +146,33 @@ public class GestionDOM {
 		return lAutor;
 	}
 	
+	/**
+	 * Añade un nuevo elemento en el archivo XML
+	 * 
+	 * @param doc - Documento XML 
+	 * @param year - Año de publicación del album
+	 * @param albumName - Nombre del Album 
+	 */
 	public void nuevoElementoDOM(Document doc, String year, String albumName) {
 		try {
+			//Crear el elemento a añadir
 			Element nSongName = doc.createElement("Album");
+			//Añadir la informacion al elemento
 			nSongName.setAttribute("data_publicacio", year);
 			nSongName.setTextContent(albumName);
+			//Crear una lista con los nodos Nom
 			NodeList nListAutores = doc.getElementsByTagName("Nom");
 			Node nodeAutor = null;
+			//Recorrer la lista
 			for (int i = 0; i < nListAutores.getLength(); i++) {
 				Node nNode = nListAutores.item(i);
+				//Buscar el nodo con el nombre "Bruce Springsteeen"
 				if(nNode.getTextContent().equals("Bruce Springsteen")) {
+					//Obtener el nodo padre
 					nodeAutor = nNode.getParentNode();
 				}
 			}
+			//Añadir nuestro elemento en el nodo actual
 			nodeAutor.appendChild(nSongName);
 			guardarDOMaFileTransformer("DiscografiaV2.xml", doc);
 		}catch(Exception e){
@@ -166,7 +180,11 @@ public class GestionDOM {
 		}
 	}
 	
-	
+	/**
+	 * 
+	 * 
+	 * @param autores - ArrayList con lo autores del xml
+	 */
 	public void generarXML(ArrayList<Autor> autores){
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
@@ -192,6 +210,14 @@ public class GestionDOM {
 		}
 	}
 	
+	
+	/**
+	 * Recoje la informacion de un Document y la añade a un archivo XML
+	 * 
+	 * @param nombre - Nombre del archivo
+	 * @param doc - Documento XML
+	 * @return - Devuelve -1 si falla, 0 si es correcto. 
+	 */
 	public int guardarDOMaFileTransformer(String nombre, Document doc)
     {
         try{
