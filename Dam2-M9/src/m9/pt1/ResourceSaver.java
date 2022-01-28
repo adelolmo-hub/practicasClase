@@ -1,6 +1,8 @@
 package m9.pt1;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +14,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+
 
 public class ResourceSaver {
 	
@@ -39,7 +43,8 @@ public class ResourceSaver {
 			URLConnection con = url.openConnection();
 			for(String key : resources.keySet()) {
 				if(Pattern.matches(key , con.getContentType()) || Pattern.matches(key, URLConnection.guessContentTypeFromName(url.getFile()))){
-					File file = new File("resources/" + resources.get(key)+"/archivo1");
+					String nombre = resource.split("/")[resource.split("/").length-1];
+					File file = new File("resources/" +resources.get(key) +"/"+ resources.get(key)+nombre);
 					getContent(url, file);
 				}
 			}
@@ -49,17 +54,15 @@ public class ResourceSaver {
 	}
 	
 	public void getContent(URL url, File file){
-		InputStream in;
-		char[] cbuf = new char[512];
+		BufferedInputStream in;
+		byte bytesLlegits[] = new byte[1024];
 		int caractersLlegits;
 
 		try {
-			in = url.openStream();
-			InputStreamReader inr = new InputStreamReader(in);
-			FileWriter escritor = new FileWriter(file);
-			while((caractersLlegits=inr.read(cbuf))!=-1) {
-				String str = String.copyValueOf(cbuf, 0, caractersLlegits);
-				escritor.write(str);
+			in = new BufferedInputStream(url.openStream());
+			FileOutputStream fileOutStr = new FileOutputStream(file);
+			while((caractersLlegits=in.read(bytesLlegits, 0, 1024))!=-1) {
+				fileOutStr.write(bytesLlegits, 0, caractersLlegits);
 			}
 		}catch (IOException ex) {
 			Logger.getLogger(ResourceSaver.class.getName()).log(Level.

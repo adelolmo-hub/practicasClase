@@ -33,7 +33,7 @@ public class TestResourceSaver {
             save("http://www.uscis.gov/files/form/i-9.pdf", saver);
             save("http://farm8.staticflickr.com/7076/7301495298_ee121d2013_s_d.jpg", saver);
             save("http://www.mediacollege.com/downloads/sound-effects/city/traffic-02.mp3", saver);
-            save("http://archive.org/download/TheCaseOfTheKangarooKid1963/TheKangarooKid.mp4", saver);
+            //save("http://archive.org/download/TheCaseOfTheKangarooKid1963/TheKangarooKid.mp4", saver);
         }catch (MalformedURLException ex){
             Logger.getLogger(TestResourceSaver.class.getName()).log(Level.SEVERE, null, ex);
         }catch (IOException ex) {
