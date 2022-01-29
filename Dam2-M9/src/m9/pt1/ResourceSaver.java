@@ -1,72 +1,73 @@
 package m9.pt1;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-
-
 public class ResourceSaver {
-	
-	HashMap<String, String> resources = new HashMap<String, String>();
 
+	Map<String, String> resources = new HashMap<String, String>();
+
+	/**
+	 * Add de folder name and the pattern to the hashmap
+	 * 
+	 * @param pattern - String with the pattern to compare
+	 * @param carpeta - String with the folder name
+	 */
 	public void addResourceType(String pattern, String carpeta) {
 		resources.put(pattern, carpeta);
 	}
 
-	public void createFolderTree() throws IOException{
-		File carpeta = null;
-		for(String nombre : resources.values()) {
-			carpeta = new File("resources/"+nombre);
-			if(!carpeta.exists()) {
-				if(!carpeta.mkdir()) {
-					System.out.println("No se ha podido crear la carpeta " + carpeta.getName());
-				}
+	/**
+	 * Creates the folder structure to store our files
+	 * 
+	 * @throws IOException
+	 */
+	public void createFolderTree() throws IOException {
+		String folderName = "resources";
+		createFolder(folderName);
+		for (String nombre : resources.values()) {
+			createFolder(folderName + "/" + nombre);
+		}
+	}
+
+	/**
+	 * Given a URL, downloads the content and stores it in a specific folder 
+	 * 
+	 * @param resource - String with the URL to download
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	public void saveResource(String resource) throws MalformedURLException, IOException {
+		URL url = new URL(resource);
+		URLConnection con = url.openConnection();
+		for (String key : resources.keySet()) {
+			if (Pattern.matches(key, con.getContentType())
+					|| Pattern.matches(key, URLConnection.guessContentTypeFromName(url.getFile()))) {
+				String nombre = resource.split("/")[resource.split("/").length - 1];
+				File file = new File("resources/" + resources.get(key) + "/" + resources.get(key) + nombre);
+				FileOutputStream fileOut = new FileOutputStream(file);
+				con.getInputStream().transferTo(fileOut);
 			}
 		}
 	}
 
-	public void saveResource(String resource) throws MalformedURLException, IOException{
-		try{
-			URL url = new URL(resource);
-			URLConnection con = url.openConnection();
-			for(String key : resources.keySet()) {
-				if(Pattern.matches(key , con.getContentType()) || Pattern.matches(key, URLConnection.guessContentTypeFromName(url.getFile()))){
-					String nombre = resource.split("/")[resource.split("/").length-1];
-					File file = new File("resources/" +resources.get(key) +"/"+ resources.get(key)+nombre);
-					getContent(url, file);
-				}
-			}
-		}catch(IOException e) {
-			Logger.getLogger(ResourceSaver.class.getName()).log(Level.SEVERE, null, e);
-		}	
-	}
-	
-	public void getContent(URL url, File file){
-		BufferedInputStream in;
-		byte bytesLlegits[] = new byte[1024];
-		int caractersLlegits;
-
-		try {
-			in = new BufferedInputStream(url.openStream());
-			FileOutputStream fileOutStr = new FileOutputStream(file);
-			while((caractersLlegits=in.read(bytesLlegits, 0, 1024))!=-1) {
-				fileOutStr.write(bytesLlegits, 0, caractersLlegits);
-			}
-		}catch (IOException ex) {
-			Logger.getLogger(ResourceSaver.class.getName()).log(Level.
-					SEVERE, null, ex);
+	/**
+	 * Creates a folder with the name given by parameter
+	 * 
+	 * @param folderName - String with the folder name
+	 * @throws IOException
+	 */
+	private void createFolder(String folderName) throws IOException {
+		File file = new File(folderName);
+		if (!file.exists() && !file.mkdir()) {
+			throw new IOException("Can't create the folder");
 		}
 	}
 
