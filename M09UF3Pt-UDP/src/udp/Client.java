@@ -23,28 +23,29 @@ public class Client {
 	public void init(String host, int port) throws SocketException, UnknownHostException {
 		serverAddress = InetAddress.getByName(host);
 		serverPort = port;
+		consoleInterface = new ConsoleInterface();
 		socket = new DatagramSocket();
 	}
 
 	public void runClient() throws IOException {
 		byte [] receivedData = new byte[1024];
 		byte [] sendingData;
-		int[] data;
 		
 		sendingData = getRequest();
 		while(mustContinue(sendingData)) {
 			DatagramPacket packet = new DatagramPacket(sendingData, 
 					sendingData.length, serverAddress, serverPort);
 			socket.send(packet);
-			packet = new DatagramPacket(new byte[1024], 1024);
+			packet = new DatagramPacket(receivedData, 1024);
 			socket.setSoTimeout(5000);
 			try {
 				socket.receive(packet);
 				sendingData = getDataToRequest(packet.getData(), packet.getLength());
 			}catch(SocketTimeoutException e) {
-				data = timeoutExceeded(packet);
+				timeoutExceeded(packet);
 			}
 		}
+		socket.close();
 	}
 
 
@@ -59,9 +60,15 @@ public class Client {
 		return ret;
 	}
 
-	private byte[] getDataToRequest(byte[] data, int length) {
+	private byte[] getDataToRequest(byte[] data, int length) throws IOException {
 		// TODO Auto-generated method stub
-		return null;
+		Response response = new Response(data);
+		System.out.println("Server response: " + response.getResult());
+		if(consoleInterface.readYesNo("Another operation (Y)", 'Y', ConsoleInterface.TO_UPPPER_CASE)) {
+			return getRequest();
+		}
+		
+		return new byte[] {-1};
 	}
 
 	private void close() {
